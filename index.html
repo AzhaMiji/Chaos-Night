@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>CHAOS NIGHT</title>
+<style>
+@property --h{syntax:'<number>';inherits:true;initial-value:265}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#0a0618;color:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:manipulation;transition:--h 1s}
+#bg{position:fixed;inset:-10%;background:radial-gradient(circle at 20% 20%,hsl(var(--h) 80% 32%),transparent 55%),radial-gradient(circle at 80% 80%,hsl(calc(var(--h) + 70) 80% 26%),transparent 55%),#0a0618;animation:drift 12s ease-in-out infinite alternate;z-index:-1}
+@keyframes drift{to{transform:scale(1.2) rotate(4deg)}}
+.sc{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:env(safe-area-inset-top) 12px 12px;text-align:center;gap:14px;overflow:auto}
+.sc.on{display:flex;animation:in .4s}
+@keyframes in{from{opacity:0;transform:scale(.96) translateY(12px)}}
+.logo{font-size:clamp(44px,13vw,120px);font-weight:900;margin:0;line-height:1;background:linear-gradient(90deg,#ff3d81,#ffb020,#2ee66b,#2d9bff,#ff3d81);background-size:300%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:flow 6s linear infinite;filter:drop-shadow(0 0 18px #ff3d8188)}
+@keyframes flow{to{background-position:300%}}
+.sub{font-size:clamp(16px,3.5vw,26px);opacity:.85;margin:0}.small{opacity:.6;font-size:14px}
+.btn{border:0;border-radius:18px;padding:16px 34px;font:900 clamp(18px,4vw,26px) system-ui;color:#fff;background:linear-gradient(135deg,#ff3d81,#8a4dff);box-shadow:0 0 26px #ff3d8199;cursor:pointer;transition:transform .1s}
+.btn:active,.chip:active{transform:scale(.93)}
+.btn.alt{background:rgba(255,255,255,.12);box-shadow:none;border:1px solid #fff4}
+.card{background:rgba(255,255,255,.08);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid #fff3;border-radius:22px;padding:18px;width:min(520px,100%)}
+.chip{border:2px solid #fff4;background:rgba(255,255,255,.08);color:#fff;border-radius:14px;padding:12px 16px;font:800 16px system-ui;cursor:pointer;margin:3px}
+.chip.sel{background:#8a4dff;border-color:#fff;box-shadow:0 0 16px #8a4dff}
+label{display:flex;align-items:center;gap:10px;margin:8px 0}label i{width:18px;height:40px;border-radius:8px;background:var(--c);box-shadow:0 0 12px var(--c)}
+input{flex:1;font:700 20px system-ui;padding:10px 12px;border-radius:12px;border:2px solid #fff4;background:#0006;color:#fff;user-select:text;-webkit-user-select:text;min-width:0}
+#ctl{position:fixed;top:calc(env(safe-area-inset-top) + 6px);right:8px;z-index:50;display:flex;gap:6px}
+#ctl button,#quit{width:40px;height:40px;border-radius:12px;border:1px solid #fff4;background:#0008;color:#fff;font-size:18px}
+#game{justify-content:flex-start;padding:0;gap:0;overflow:hidden}
+#hud{width:100%;display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top) + 6px) 60px 4px 8px;font-weight:900}
+#rl{flex:1;text-align:center;font-size:18px;letter-spacing:2px}
+#bar{width:calc(100% - 20px);height:6px;border-radius:4px;background:#fff2;overflow:hidden}#bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff3d81,#ffb020);transition:width .6s}
+#info{min-height:clamp(46px,12vh,110px);display:flex;align-items:center;justify-content:center;flex-direction:column;font-size:clamp(18px,4.5vw,38px);font-weight:900;padding:4px 10px;line-height:1.15}
+#info small{font-size:14px;opacity:.7;display:block}.huge{font-size:clamp(40px,11vw,100px);font-weight:900}
+.blob{width:clamp(60px,16vh,130px);aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;color:#000;box-shadow:0 0 30px currentColor}
+#stage{flex:1;width:100%;min-height:0;position:relative}
+#zones{height:100%;display:grid;gap:8px;padding:8px}.n2{grid-template-rows:1fr 1fr}.n3{grid-template-rows:repeat(3,1fr)}.n4{grid-template:1fr 1fr/1fr 1fr}
+@media(orientation:landscape){.n2{grid-template:1fr/1fr 1fr}.n3{grid-template:1fr/repeat(3,1fr)}}
+.zone{position:relative;border-radius:22px;border:3px solid var(--c);background:color-mix(in srgb,var(--c) 20%,#0d0a1f);box-shadow:0 0 18px color-mix(in srgb,var(--c) 50%,transparent);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;min-height:0;transition:background .15s}
+.zn{font-weight:900;color:var(--c);font-size:clamp(14px,3vw,22px);margin-top:4px}.zi{font-weight:800;min-height:1.2em;font-size:clamp(13px,2.6vw,20px)}
+.zb{flex:1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:0;padding:4px}
+.big{font-size:clamp(22px,6vw,52px);font-weight:900}.num{font-size:clamp(36px,10vw,90px);font-weight:900}
+.zone.p{animation:pop .12s}@keyframes pop{50%{transform:scale(.95);filter:brightness(1.6)}}
+.zone.go,.zone.hold{background:#17c964}.zone.bad,.zone.lock{background:#5a1020}.zone.hot{background:#8a1a1a;animation:hot .4s infinite alternate}@keyframes hot{to{transform:scale(1.03)}}
+.opts{display:grid;gap:6px;width:100%;height:100%;grid-template-columns:repeat(var(--cols),1fr)}
+.o{border:2px solid #fff5;border-radius:12px;background:rgba(255,255,255,.12);color:#fff;font:800 clamp(16px,4vw,34px) system-ui;padding:2px;cursor:pointer}.o:active{transform:scale(.92)}.o.ok{background:#17c964}.o.no{background:#d11a3a;opacity:.5}
+#arena{position:absolute;inset:8px;border-radius:22px;border:3px dashed #fff4;overflow:hidden}
+#tgt{position:absolute;left:0;top:0;border-radius:50%;box-shadow:0 0 22px #fff9;border:3px solid #fff}
+#boxes{height:100%;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:10px}
+.box{border:3px solid #ffb020;border-radius:20px;background:linear-gradient(135deg,#ff3d81,#8a4dff);font:900 clamp(20px,5vw,40px) system-ui;color:#fff;box-shadow:0 0 22px #ffb02088;animation:bob 1.6s ease-in-out infinite alternate}
+@keyframes bob{to{transform:translateY(-6px) rotate(2deg)}}.box.open{animation:none;background:#162;transform:scale(.95)}
+.boom{font-size:clamp(80px,25vw,220px);animation:kab .8s}@keyframes kab{from{transform:scale(.1)}60%{transform:scale(1.5)}}
+.shake{animation:sh .6s}@keyframes sh{10%,50%,90%{transform:translate(-14px,8px)}30%,70%{transform:translate(14px,-8px)}}
+#intro{position:absolute;inset:0;background:rgba(10,6,24,.92);display:none;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:20px;text-align:center;z-index:20}#intro.on{display:flex}
+#intro .rn{font-size:22px;letter-spacing:4px;opacity:.8}#intro .ic{font-size:80px}#intro .gn{font-size:clamp(30px,8vw,64px);font-weight:900}#intro p{max-width:480px;opacity:.85;font-size:18px}
+#cd{font-size:clamp(80px,24vw,200px);font-weight:900;min-height:1.1em;animation:cdp .8s}@keyframes cdp{from{transform:scale(2.2);opacity:0}}
+#rh{font-size:clamp(28px,8vw,64px);font-weight:900;margin:0;animation:in .5s}#rp{font-size:clamp(24px,6vw,44px);font-weight:900;color:#ffb020}
+.row{display:flex;align-items:center;gap:12px;width:min(480px,100%);padding:10px 14px;margin:5px auto;border-radius:16px;border:2px solid var(--c);background:color-mix(in srgb,var(--c) 22%,#0d0a1f);font-size:clamp(18px,4.5vw,28px);font-weight:800;animation:rowin .5s backwards}
+@keyframes rowin{from{opacity:0;transform:translateX(-60px)}}.row span{flex:1;text-align:left}.row u{text-decoration:none;color:#ffb020;min-width:50px;animation:plus 1s .5s backwards}@keyframes plus{from{opacity:0;transform:translateY(20px) scale(2)}}.row em{font-style:normal;font-size:1.3em}
+#modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:100;padding:16px}#modal.on{display:flex}#modal ol{text-align:left;font-size:18px;line-height:1.6;padding-left:22px}
+#cf{position:fixed;inset:0;pointer-events:none;display:none;z-index:60}
+</style></head><body>
+<div id="bg"></div>
+<div id="ctl"><button id="snd">🔊</button><button id="fsb">⛶</button></div>
+
+<section id="home" class="sc on">
+ <h1 class="logo">CHAOS<br>NIGHT</h1>
+ <p class="sub">One device. Four friends. Zero chill.</p>
+ <button class="btn" id="play">PLAY</button>
+ <button class="btn alt" id="how">HOW TO PLAY</button>
+ <p class="small">2–4 Players • One Device • No Internet Needed</p>
+</section>
+
+<section id="setup" class="sc">
+ <h2 style="margin:0;font-size:32px">WHO'S PLAYING?</h2>
+ <div class="card"><div id="cnt"></div><div id="rds" style="margin-top:6px"></div><div id="nms" style="margin-top:8px"></div></div>
+ <p class="small">📱 Tip: landscape mode gives bigger tap zones</p>
+ <div><button class="btn" id="start">START GAME</button> <button class="btn alt" id="back">BACK</button></div>
+</section>
+
+<section id="game" class="sc">
+ <div id="hud"><button id="quit">🏠</button><div id="rl"></div></div>
+ <div id="bar"><i></i></div><div id="info"></div><div id="stage"></div><div id="intro"></div>
+</section>
+
+<section id="result" class="sc">
+ <h1 id="rh"></h1><div id="rp"></div><div id="rd" class="small"></div><div id="lb" style="width:100%"></div>
+ <button class="btn" id="nx">NEXT ROUND</button>
+</section>
+
+<section id="final" class="sc">
+ <div style="font-size:90px;animation:bob 1s infinite alternate">👑</div>
+ <h1 id="fh" class="logo" style="font-size:clamp(36px,11vw,90px)"></h1><p class="sub">IS THE CHAOS CHAMPION</p>
+ <div id="flb" style="width:100%"></div>
+ <div><button class="btn" id="again">PLAY AGAIN</button> <button class="btn alt" id="newg">NEW GAME</button></div>
+</section>
+
+<div id="modal"><div class="card"><h2 style="margin-top:0">HOW TO PLAY</h2><ol>
+<li>Put the device in the middle.</li><li>Choose 2–4 players.</li><li>Enter everyone's names.</li><li>Complete random mini-games.</li><li>Earn points.</li><li>Highest score becomes the Chaos Champion.</li></ol>
+<button class="btn" id="mc">GOT IT</button></div></div>
+<canvas id="cf"></canvas>
+
+<script>
+/* ===== STATE ===== */
+const $=s=>document.querySelector(s),C=['#ff3d81','#2d9bff','#2ee66b','#ffb020'];
+let G={n:2,names:['','','',''],rounds:10,scores:[],round:0,last:null,sound:true};
+try{Object.assign(G,JSON.parse(localStorage.chaosNight||'{}'))}catch(e){}
+const save=()=>{try{localStorage.chaosNight=JSON.stringify({n:G.n,names:G.names,rounds:G.rounds,sound:G.sound})}catch(e){}};
+let T=[],CL=[],session=0,tok=0,cft=0;
+
+/* ===== UTILITIES ===== */
+const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a,pick=a=>a[rnd(0,a.length-1)],shuf=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const nm=i=>esc(G.names[i]||('Player '+(i+1)));
+const after=(f,ms)=>{const s=session,id=setTimeout(()=>{if(s===session)f()},ms);T.push(id);return id};
+const every=(f,ms)=>{const s=session,id=setInterval(()=>{if(s===session)f()},ms);T.push(id);return id};
+const win=(t,f)=>{addEventListener(t,f);CL.push(()=>removeEventListener(t,f))};
+const clearAll=()=>{T.forEach(t=>{clearTimeout(t);clearInterval(t)});T=[];CL.forEach(f=>f());CL=[];session++};
+const vib=n=>{try{navigator.vibrate&&navigator.vibrate(n)}catch(e){}};
+const tap=(el,f)=>el.addEventListener('pointerdown',e=>{e.preventDefault();f(e)});
+const pulse=el=>{el.classList.remove('p');void el.offsetWidth;el.classList.add('p')};
+const info=h=>$('#info').innerHTML=h,zb=(el,h)=>el.querySelector('.zb').innerHTML=h,zi=(el,t)=>el.querySelector('.zi').textContent=t;
+const shake=()=>{document.body.classList.add('shake');setTimeout(()=>document.body.classList.remove('shake'),650)};
+addEventListener('contextmenu',e=>e.preventDefault());
+
+/* ===== AUDIO (Web Audio, created after first interaction) ===== */
+let AC;
+function snd(f,d=.1,t='sine',v=.15,w=0){if(!G.sound)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state=='suspended')AC.resume();const o=AC.createOscillator(),g=AC.createGain(),s=AC.currentTime+w;o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(.001,s+d);o.connect(g);g.connect(AC.destination);o.start(s);o.stop(s+d)}catch(e){}}
+const S={tap:()=>snd(500,.05,'square',.07),ok:()=>{snd(660,.1);snd(880,.15,'sine',.15,.1)},bad:()=>snd(150,.3,'sawtooth',.15),win:()=>[523,659,784,1047,1319].forEach((f,i)=>snd(f,.25,'triangle',.15,i*.12)),cd:()=>snd(440,.15,'sine',.2),go:()=>snd(880,.45,'square',.12),boom:()=>{for(let i=0;i<8;i++)snd(130-i*10,.4,'sawtooth',.2,i*.03)}};
+document.addEventListener('pointerdown',e=>{if(e.target.closest('.btn,.chip'))S.tap()});
+
+/* ===== UI / SCREENS ===== */
+function show(id){document.querySelectorAll('.sc').forEach(s=>s.classList.toggle('on',s.id==id));if(id!='final'){cft++;$('#cf').style.display='none'}}
+$('#snd').textContent=G.sound?'🔊':'🔇';
+$('#snd').onclick=()=>{G.sound=!G.sound;$('#snd').textContent=G.sound?'🔊':'🔇';save();S.tap()};
+if(!document.documentElement.requestFullscreen)$('#fsb').style.display='none';
+$('#fsb').onclick=()=>{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen().catch(()=>{})};
+$('#how').onclick=()=>$('#modal').classList.add('on');$('#mc').onclick=()=>$('#modal').classList.remove('on');
+$('#play').onclick=()=>{renderSetup();show('setup')};$('#back').onclick=()=>show('home');
+
+/* ===== PLAYER SETUP ===== */
+function renderSetup(){
+ $('#cnt').innerHTML=[2,3,4].map(n=>`<button class="chip ${G.n==n?'sel':''}" data-n="${n}">${n} Players</button>`).join('');
+ $('#rds').innerHTML=[5,10,15,20].map(r=>`<button class="chip ${G.rounds==r?'sel':''}" data-r="${r}">${r} rounds</button>`).join('');
+ $('#nms').innerHTML=[...Array(G.n)].map((_,i)=>`<label style="--c:${C[i]}"><i></i><input maxlength="12" data-i="${i}" value="${esc(G.names[i]||'')}" placeholder="Player ${i+1}"></label>`).join('');
+}
+$('#setup').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;if(b.dataset.n)G.n=+b.dataset.n;if(b.dataset.r)G.rounds=+b.dataset.r;renderSetup()});
+$('#setup').addEventListener('input',e=>{if(e.target.dataset.i!=null)G.names[+e.target.dataset.i]=e.target.value});
+$('#start').onclick=()=>{for(let i=0;i<G.n;i++)G.names[i]=(G.names[i]||'').trim()||'Player '+(i+1);save();newGame()};
+function newGame(){G.scores=Array(G.n).fill(0);G.round=0;G.last=null;startRound()}
+
+/* ===== SCORING ===== */
+function rankPts(v,low){const n=v.length,P=n==2?[3,1]:[3,2,1,0];
+ const idx=[...v.keys()].sort((a,b)=>{const x=v[a],y=v[b];if(x==null&&y==null)return 0;if(x==null)return 1;if(y==null)return -1;return low?x-y:y-x});
+ const d=Array(n).fill(0);let i=0;while(i<n){let j=i;while(j+1<n&&v[idx[j+1]]===v[idx[i]])j++;for(let k=i;k<=j;k++)d[idx[k]]=P[i];i=j+1}return d}
+const losePts=L=>G.scores.map((_,i)=>L.length==G.n?1:L.includes(i)?(G.n==2?1:0):(G.n==2?3:2));
+function board(el,delta){const order=[...G.scores.keys()].sort((a,b)=>G.scores[b]-G.scores[a]);
+ el.innerHTML=order.map((i,r)=>`<div class="row" style="--c:${C[i]};animation-delay:${r*.12}s"><b>${r+1}.</b><span>${nm(i)}</span>${delta&&delta[i]?`<u>${delta[i]>0?'+':''}${delta[i]}</u>`:''}<em>${G.scores[i]}</em></div>`).join('')}
+function showResult(d,det,head){
+ G.scores=G.scores.map((s,i)=>Math.max(0,s+d[i]));
+ const mx=Math.max(...d),w=d.map((x,i)=>x==mx?i:-1).filter(i=>i>=0);
+ $('#rh').innerHTML=head||(w.length==G.n?"🤝 IT'S A TIE!":'🏆 '+w.map(nm).join(' & ').toUpperCase()+(w.length>1?' WIN!':' WINS!'));
+ $('#rp').textContent=mx>0?'+'+mx+' POINTS':'';$('#rd').innerHTML=det||'';
+ board($('#lb'),d);$('#nx').textContent=G.round>=G.rounds?'FINAL RESULTS 👑':'NEXT ROUND ▶';
+ show('result');S.win();vib(60)}
+$('#nx').onclick=startRound;
+
+/* ===== ROUND MANAGER ===== */
+function mkZones(){const st=$('#stage');st.innerHTML='';const z=document.createElement('div');z.id='zones';z.className='n'+G.n;st.appendChild(z);
+ return [...Array(G.n)].map((_,i)=>{const d=document.createElement('div');d.className='zone';d.style.setProperty('--c',C[i]);d.innerHTML=`<div class="zn">${nm(i)}</div><div class="zi"></div><div class="zb"></div>`;z.appendChild(d);return d})}
+function startRound(){
+ clearAll();if(G.round>=G.rounds)return showFinal();G.round++;
+ let g;do g=pick(GAMES);while(g===G.last&&GAMES.length>1);G.last=g;
+ const my=++tok;let ended=0;
+ show('game');$('#rl').textContent=`ROUND ${G.round} / ${G.rounds}`;$('#bar i').style.width=(G.round-1)/G.rounds*100+'%';
+ document.body.style.setProperty('--h',g.h);$('#stage').innerHTML='';info('');
+ const it=$('#intro');it.classList.add('on');
+ it.innerHTML=`<div class="rn">ROUND ${G.round} / ${G.rounds}</div><div class="ic">${g.i}</div><div class="gn">${g.n}</div><p>${g.d}</p><div id="cd"></div>`;
+ const end=(d,det,head)=>{if(my!==tok||ended)return;ended=1;clearAll();vib(40);setTimeout(()=>{if(my===tok)showResult(d,det,head)},1100)};
+ const seq=['3','2','1','GO!'];
+ const step=k=>{const c=$('#cd');c.textContent=seq[k];c.style.animation='none';void c.offsetWidth;c.style.animation='';k<3?S.cd():S.go();
+  if(k<3)after(()=>step(k+1),800);else after(()=>{it.classList.remove('on');g.run(end)},650)};
+ after(()=>step(0),2000)}
+$('#quit').onclick=()=>{if(confirm('Quit to menu?')){clearAll();tok++;show('home')}};
+
+/* ===== SHARED MINI-GAME ENGINE: quiz (math / memory / odd one out) ===== */
+function quiz(end,prompt,opts,cols){
+ const z=mkZones(),lk=z.map(()=>0),t0=performance.now();let done=0;info(prompt);
+ z.forEach((el,i)=>{const b=el.querySelector('.zb');
+  b.innerHTML=`<div class="opts" style="--cols:${cols}">${opts.map((o,k)=>`<button class="o" data-k="${k}">${o.t}</button>`).join('')}</div>`;
+  b.querySelectorAll('.o').forEach(btn=>tap(btn,()=>{if(done||lk[i])return;const o=opts[btn.dataset.k];
+   if(o.ok){done=1;btn.classList.add('ok');el.classList.add('go');S.ok();const v=z.map(()=>null);v[i]=Math.round(performance.now()-t0);end(rankPts(v,1),nm(i)+' answered in '+v[i]+' ms')}
+   else{lk[i]=1;btn.classList.add('no');el.classList.add('lock');S.bad();vib(80);after(()=>{lk[i]=0;el.classList.remove('lock')},1000)}}))});
+ after(()=>{if(done)return;done=1;end(z.map(()=>0),'Nobody got it!','😴 NOBODY GOT IT')},25000)}
+
+/* ===== MINI-GAMES ===== */
+const COLS=[['RED','#ff3b3b'],['BLUE','#2d6bff'],['YELLOW','#ffd400'],['PURPLE','#a74bff'],['ORANGE','#ff8a00'],['PINK','#ff4fd8'],['CYAN','#18d6e8']];
+const EM=['🍕','🚗','👻','❤️','🐱','⭐','🎈','🍔','🚀','🌵','🦄','🍩'];
+const GAMES=[
+{n:'TAP BATTLE',i:'👆',h:330,d:'Tap your zone as fast as you can for 10 seconds!',run(end){
+ const z=mkZones(),c=z.map(()=>0);let on=1,t=10;info('⏱ '+t);
+ z.forEach((el,i)=>{zb(el,'<div class="num">0</div>');zi(el,'TAP!');tap(el,()=>{if(!on)return;c[i]++;el.querySelector('.num').textContent=c[i];S.tap();pulse(el)})});
+ every(()=>{t--;info('⏱ '+t);if(t<=0&&on){on=0;end(rankPts(c),c.map((x,i)=>nm(i)+': '+x).join(' • '))}},1000)}},
+
+{n:'REACTION TEST',i:'⚡',h:140,d:'Wait for TAP! then smash your zone. Tap early and you\'re out!',run(end){
+ const z=mkZones(),r=z.map(()=>undefined);let go=0,t0=0,left=G.n;info('WAIT…');
+ const fin=()=>end(rankPts(r.map(x=>typeof x=='number'?x:null),1),r.map((x,i)=>nm(i)+': '+(typeof x=='number'?x+' ms':'false start')).join(' • '));
+ z.forEach((el,i)=>{zb(el,'<div class="big">WAIT…</div>');tap(el,()=>{if(r[i]!==undefined)return;
+  if(!go){r[i]='x';el.classList.add('bad');zb(el,'<div class="big">😬 FALSE START</div>');S.bad();vib(80)}
+  else{r[i]=Math.round(performance.now()-t0);zb(el,`<div class="big">${r[i]} ms</div>`);S.ok()}
+  if(--left==0)fin()})});
+ after(()=>{go=1;t0=performance.now();info('TAP!');z.forEach((el,i)=>{if(r[i]===undefined){el.classList.add('go');zb(el,'<div class="num">TAP!</div>')}});S.go();after(fin,3000)},rnd(2000,6000))}},
+
+{n:'STOP THE TIMER',i:'⏱️',h:200,d:'Tap when the timer hits the target. Sometimes it vanishes!',run(end){
+ const z=mkZones(),tg=rnd(30,80)/10,hide=Math.random()<.6,r=z.map(()=>null),t0=performance.now();let left=G.n;
+ const fin=()=>end(rankPts(r.map(x=>x==null?null:Math.abs(x-tg)),1),r.map((x,i)=>nm(i)+': '+(x==null?'—':x.toFixed(2)+'s')).join(' • '));
+ every(()=>{const e=(performance.now()-t0)/1000;info(`STOP AT ${tg.toFixed(2)}s<span class="huge">${hide&&e>1.5?'?.??':e.toFixed(2)}</span>`)},30);
+ z.forEach((el,i)=>{zb(el,'<div class="big">STOP!</div>');tap(el,()=>{if(r[i]!=null)return;r[i]=(performance.now()-t0)/1000;S.tap();el.classList.add('hold');zb(el,'<div class="big">🔒 LOCKED</div>');if(--left==0)fin()})});
+ after(fin,(tg+4)*1000)}},
+
+{n:'HOLD YOUR NERVE',i:'✊',h:30,d:'Press and hold your zone. Release at the target time. Timer is hidden!',run(end){
+ const z=mkZones(),tg=rnd(40,90)/10,s=z.map(()=>null),r=z.map(()=>null),pid=z.map(()=>null);let left=G.n,fd=0;
+ info(`Release at <b>${tg.toFixed(1)}</b> seconds<small>timer hidden</small>`);
+ const fin=()=>{if(fd)return;fd=1;const n=performance.now();s.forEach((x,i)=>{if(x!=null&&r[i]==null)r[i]=(n-x)/1000});end(rankPts(r.map(x=>x==null?null:Math.abs(x-tg)),1),r.map((x,i)=>nm(i)+': '+(x==null?'—':x.toFixed(2)+'s')).join(' • '))};
+ z.forEach((el,i)=>{zb(el,'<div class="big">HOLD</div>');tap(el,e=>{if(s[i]!=null)return;s[i]=performance.now();pid[i]=e.pointerId;el.classList.add('hold');zb(el,'<div class="big">HOLDING…</div>');S.tap()})});
+ const up=e=>{pid.forEach((p,i)=>{if(p===e.pointerId&&r[i]==null){r[i]=(performance.now()-s[i])/1000;z[i].classList.remove('hold');zb(z[i],'<div class="big">✔ RELEASED</div>');if(--left==0)fin()}})};
+ win('pointerup',up);win('pointercancel',up);after(fin,(tg+5)*1000)}},
+
+{n:"DON'T TAP",i:'🚦',h:110,d:'Tap ONLY when you see GREEN. Any other colour = penalty!',run(end){
+ const z=mkZones(),r=z.map(()=>undefined),gs=rnd(4,9);let step=0,go=0,t0=0,left=G.n,last=-1;
+ const blob=(c,t)=>info(`<div class="blob" style="background:${c};color:${c}"><span style="color:#000">${t}</span></div>`);
+ const fin=()=>end(rankPts(r.map(x=>typeof x=='number'?x:null),1),r.map((x,i)=>nm(i)+': '+(typeof x=='number'?x+' ms':'penalty')).join(' • '));
+ z.forEach((el,i)=>{zb(el,'<div class="big">GREEN ONLY</div>');tap(el,()=>{if(r[i]!==undefined)return;
+  if(!go){r[i]='x';el.classList.add('bad');zb(el,'<div class="big">❌ WRONG!</div>');S.bad();vib(80)}
+  else{r[i]=Math.round(performance.now()-t0);el.classList.add('go');zb(el,`<div class="big">${r[i]} ms</div>`);S.ok()}
+  if(--left==0)fin()})});
+ const nx=()=>{step++;if(step==gs){go=1;t0=performance.now();blob('#22e05a','GREEN');S.go();after(fin,2500);return}
+  let c;do c=rnd(0,COLS.length-1);while(c==last);last=c;blob(COLS[c][1],COLS[c][0]);S.tap();after(nx,rnd(550,1000))};nx()}},
+
+{n:'QUICK MATH',i:'🧮',h:260,d:'Find the right answer first. Wrong answers lock you for 1 second!',run(end){
+ let a,b,q,ans;const t=rnd(0,3);
+ if(t==0){a=rnd(5,60);b=rnd(5,60);ans=a+b;q=`${a} + ${b}`}else if(t==1){a=rnd(20,90);b=rnd(3,a-1);ans=a-b;q=`${a} − ${b}`}
+ else if(t==2){a=rnd(2,12);b=rnd(2,12);ans=a*b;q=`${a} × ${b}`}else{b=rnd(2,9);ans=rnd(2,10);a=b*ans;q=`${a} ÷ ${b}`}
+ const set=new Set([ans]);while(set.size<4){const w=ans+pick([-1,1])*rnd(1,10);if(w>=0)set.add(w)}
+ quiz(end,`<span class="huge">${q} = ?</span>`,shuf([...set]).map(x=>({t:x,ok:x==ans})),2)}},
+
+{n:'MEMORY FLASH',i:'🧠',h:300,d:'Memorise the sequence, then pick it from the options!',run(end){
+ const s=shuf(EM).slice(0,4);info(`<span class="huge">${s.join(' ')}</span><small>memorise!</small>`);
+ after(()=>{const set=new Set([s.join(' ')]);while(set.size<4){const c=[...s],i=rnd(0,3);if(Math.random()<.5){let j;do j=rnd(0,3);while(j==i);[c[i],c[j]]=[c[j],c[i]]}else c[i]=pick(EM.filter(e=>!s.includes(e)));set.add(c.join(' '))}
+  quiz(end,'Which sequence was it? 🤔',shuf([...set]).map(x=>({t:x,ok:x==s.join(' ')})),1)},2300)}},
+
+{n:'ODD ONE OUT',i:'🔍',h:60,d:'Spot the different emoji before anyone else!',run(end){
+ const p=pick([['😎','🤓'],['🙂','🙃'],['🍎','🍅'],['👻','🤡'],['🐵','🙈'],['🌕','🌝'],['😡','😠']]),o=rnd(0,8),f=Math.random()<.5;
+ quiz(end,'Tap the odd one! 👀',[...Array(9)].map((_,i)=>({t:i==o?p[f?1:0]:p[f?0:1],ok:i==o})),3)}},
+
+{n:"DON'T LAUGH",i:'😐',h:350,d:'Follow the silly orders with a straight face. Then vote who cracked first!',run(end){
+ const z=mkZones(),votes=z.map(()=>0),vd=z.map(()=>0);let left=G.n,k=0,fd=0;
+ const CH=['Everyone stare at %a.','%a must make the weirdest face possible.','Everyone imitate %a.','%a: do your best evil laugh.','Everyone talk like a robot.','%a and %b: stare at each other. No blinking!','%a: whisper-yell your favourite food.','Everyone act like a chicken.'];
+ const L=shuf(CH).slice(0,3);z.forEach(el=>zb(el,'<div class="huge">😐</div>'));
+ const tally=()=>{if(fd)return;fd=1;const m=Math.max(...votes);if(m==0)return end(z.map(()=>1),'Nobody voted!','🤷 NO VOTES');
+  const lo=votes.map((v,i)=>v==m?i:-1).filter(i=>i>=0);end(losePts(lo),votes.map((v,i)=>nm(i)+': '+v+' votes').join(' • '),'😂 '+lo.map(nm).join(' & ').toUpperCase()+' BROKE FIRST!')};
+ const vote=()=>{info('WHO BROKE FIRST? 😂<small>everyone vote!</small>');S.go();
+  z.forEach((el,i)=>{const b=el.querySelector('.zb');b.innerHTML=`<div class="opts" style="--cols:1">${[...Array(G.n).keys()].filter(j=>j!=i).map(j=>`<button class="o" data-j="${j}" style="color:${C[j]}">${nm(j)}</button>`).join('')}</div>`;
+   b.querySelectorAll('.o').forEach(btn=>tap(btn,()=>{if(vd[i])return;vd[i]=1;votes[+btn.dataset.j]++;S.ok();zb(el,'<div class="big">✔ VOTED</div>');if(--left==0)tally()}))});after(tally,20000)};
+ const sh=()=>{if(k>=3)return vote();const a=rnd(0,G.n-1);let b;do b=rnd(0,G.n-1);while(b==a);info(L[k].replace(/%a/g,`<span style="color:${C[a]}">${nm(a)}</span>`).replace(/%b/g,`<span style="color:${C[b]}">${nm(b)}</span>`)+`<small>${k+1}/3</small>`);S.tap();k++;after(sh,4200)};sh()}},
+
+{n:'BOMB PASS',i:'💣',h:0,d:'Answer the challenge out loud, tap PASS, and get rid of the bomb!',run(end){
+ const z=mkZones(),total=rnd(8000,20000),t0=performance.now(),CH=['Name an animal!','Name a fruit!','Name a country!','Name a movie!','Name a food!','Name a colour!','Name a sport!','Name a city!','Name a song!','Name a job!'];
+ let h=rnd(0,G.n-1),dead=0;
+ const draw=()=>{info(`💣 <span style="color:${C[h]}">${nm(h)}</span>: ${pick(CH)}`);z.forEach((el,i)=>{el.classList.toggle('hot',i==h);zb(el,i==h?'<div class="huge">💣</div><div class="big">PASS!</div>':'<div class="big">😌 safe</div>')})};
+ z.forEach((el,i)=>tap(el,()=>{if(dead||i!=h)return;let n;do n=rnd(0,G.n-1);while(n==h);h=n;S.tap();vib(30);draw()}));
+ const tick=()=>{const rem=total-(performance.now()-t0);
+  if(rem<=0){dead=1;S.boom();vib([200,80,300]);shake();z.forEach(e=>e.classList.remove('hot'));zb(z[h],'<div class="boom">💥</div>');end(losePts([h]),nm(h)+' was holding the bomb!','💥 '+nm(h).toUpperCase()+' EXPLODED!');return}
+  snd(700+(1-rem/total)*900,.05,'square',.12);after(tick,120+420*rem/total)};
+ draw();tick()}},
+
+{n:'PRECISION TAP',i:'🎯',h:180,d:'Take turns tapping the moving target. Smaller = more points. 3 tries each!',run(end){
+ const st=$('#stage');st.innerHTML='<div id="arena"></div>';const ar=$('#arena'),sc=Array(G.n).fill(0),seq=[];
+ for(let r=0;r<3;r++)for(let i=0;i<G.n;i++)seq.push(i);
+ let k=0,turn=0,cur=null;const stat=()=>sc.map((s,i)=>nm(i)+' '+s).join(' • ');
+ const next=()=>{if(k>=seq.length)return end(rankPts(sc),stat());const p=seq[k];info(`<span style="color:${C[p]}">${nm(p)}</span>'s turn<small>${stat()}</small>`);ar.innerHTML='';after(()=>spawn(p),900)};
+ const spawn=p=>{const sz=rnd(38,90),W=ar.clientWidth-sz-6,H=ar.clientHeight-sz-6,a=Math.random()*6.28,sp=rnd(180,380),id=++turn;
+  let x=rnd(0,W),y=rnd(0,H),vx=Math.cos(a)*sp,vy=Math.sin(a)*sp,lt=performance.now();
+  ar.innerHTML=`<div id="tgt" style="width:${sz}px;height:${sz}px;background:${C[p]}"></div>`;const t=$('#tgt');
+  const mv=every(()=>{const n=performance.now(),dt=(n-lt)/1000;lt=n;x+=vx*dt;y+=vy*dt;if(x<0){x=0;vx=-vx}if(x>W){x=W;vx=-vx}if(y<0){y=0;vy=-vy}if(y>H){y=H;vy=-vy}t.style.transform=`translate(${x}px,${y}px)`},16);
+  cur=pts=>{if(id!=turn)return;cur=null;clearInterval(mv);sc[p]+=pts;k++;pts?S.ok():S.bad();info(pts?`🎯 +${pts}!`:'❌ MISS');after(next,800)};
+  tap(t,e=>{e.stopPropagation();const f=cur;f&&f(Math.max(1,Math.round((110-sz)/10)))});
+  after(()=>{if(id==turn&&cur)cur(0)},4000)};
+ tap(ar,()=>{const f=cur;f&&f(0)});next()}},
+
+{n:'LUCKY BUTTON',i:'🎁',h:45,d:'Take turns opening mystery boxes. Fortune favours the bold!',run(end){
+ const OUT=shuf(['+3','+2','+1','0','-1','STEAL','DOUBLE','MYSTERY']).slice(0,6),d=Array(G.n).fill(0),txt=[],st=$('#stage');let k=0,busy=0;
+ st.innerHTML=`<div id="boxes">${OUT.map((o,i)=>`<button class="box" data-i="${i}">🎁</button>`).join('')}</div>`;
+ const turn=()=>info(`<span style="color:${C[k]}">${nm(k)}</span>, pick a box!`);turn();
+ st.querySelectorAll('.box').forEach(b=>tap(b,()=>{if(busy||b.dataset.o)return;busy=1;b.dataset.o=1;const o=OUT[b.dataset.i];let v=0,t;
+  if(o=='STEAL'){let w;do w=rnd(0,G.n-1);while(w==k);d[w]-=1;v=1;t='🕵️ STEAL 1 from '+nm(w)}
+  else if(o=='DOUBLE'){v=4;t='✨ DOUBLE BONUS +4'}
+  else if(o=='MYSTERY'){v=rnd(-2,5);t='🔮 MYSTERY '+(v>0?'+':'')+v}
+  else{v=+o;t=(v>0?'+':'')+v+' points'}
+  d[k]+=v;txt.push(nm(k)+': '+t);b.classList.add('open');b.textContent=o=='STEAL'?'🕵️':o=='DOUBLE'?'✨':o=='MYSTERY'?'🔮':o;
+  v>0?S.ok():S.bad();vib(50);info(`<span style="color:${C[k]}">${nm(k)}</span>: ${t}`);
+  after(()=>{k++;busy=0;if(k>=G.n)end(d,txt.join('<br>'),'🎁 LUCKY RESULTS');else turn()},1500)}))}}
+];
+
+/* ===== FINAL RESULTS ===== */
+function showFinal(){
+ const mx=Math.max(...G.scores),w=G.scores.map((s,i)=>s==mx?i:-1).filter(i=>i>=0);
+ $('#fh').textContent=w.map(i=>G.names[i]).join(' & ').toUpperCase();
+ board($('#flb'));show('final');S.win();vib([100,50,100,50,200]);confetti()}
+$('#again').onclick=()=>{newGame()};
+$('#newg').onclick=()=>{renderSetup();show('setup')};
+function confetti(){const c=$('#cf'),x=c.getContext('2d'),my=++cft;c.width=innerWidth;c.height=innerHeight;c.style.display='block';
+ const P=[...Array(170)].map(()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height,r:rnd(4,9),vy:rnd(2,6),vx:Math.random()*4-2,c:pick(C.concat(['#fff','#b84dff'])),a:Math.random()*6}));
+ (function f(){if(my!=cft)return;x.clearRect(0,0,c.width,c.height);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.a+=.1;x.fillStyle=p.c;x.fillRect(p.x,p.y,p.r,p.r*1.6*Math.abs(Math.sin(p.a))+1)});
+  if(P.some(p=>p.y<c.height))requestAnimationFrame(f);else c.style.display='none'})()}
+</script></body></html>
